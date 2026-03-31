@@ -1,15 +1,15 @@
 name: DevSecOps Pipeline
 
-# 1. いつアルバイト君を動かすか？（コードがPushされた時！）
+# 1. 起動タイミング(コードがPushされた時）
 on: [push]
 
 jobs:
   build-and-scan:
-    # 2. アルバイト君の作業環境（最新のUbuntuの仮想マシン）
+    # 2. 作業環境（最新のUbuntuの仮想マシン）
     runs-on: ubuntu-latest
 
     steps:
-      # 3. お姉様のコードを仮想マシンに持ってくる
+      # 3. コードを仮想マシンに持ってくる
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -17,15 +17,14 @@ jobs:
       - name: Build an image from Dockerfile
         run: docker build -t secure-nginx:${{ github.sha }} .
 
-      # 5. Trivyを実行してスキャンする（ここが一番のキモ！）
+      # 5. Trivyを実行してスキャンする
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'secure-nginx:${{ github.sha }}'
           format: 'table'
-          # CRITICALかHIGHが出たらエラーにして処理を強制終了する！
+          # CRITICALかHIGHが出たらエラーにして処理を強制終了する
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-          # .trivyignoreファイルも自動で読み込んでくれます！
