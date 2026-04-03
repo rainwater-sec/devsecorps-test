@@ -1,2 +1,1 @@
-FROM nginx:alpine
-RUN apk update && apk upgrade
+FROM nginx:1.14
